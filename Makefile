@@ -39,6 +39,18 @@ ubuntu%:
 	$(DOCKER) cp $$(cat $@.cid):/dist/. "$(DIST_DIR)/ubuntu$*/$(ARCH)/"
 	$(DOCKER) rm $$(cat $@.cid) && rm $@.cid
 
+arm64ubuntu%: ARCH := arm64
+arm64ubuntu%:
+	$(DOCKER) build \
+			--build-arg VERSION_ID="$*" \
+			--build-arg GOLANG_VERSION="$(GOLANG_VERSION)" \
+			--build-arg PKG_VERS="$(VERSION)" \
+			--build-arg PKG_REV="$(PKG_REV)" \
+			--build-arg TOOLKIT_VERSION="$(TOOLKIT_VERSION)" \
+			--cache-from "$(REGISTRY)/runtime/ubuntu$*" \
+			--tag "$(REGISTRY)/runtime/ubuntu$*" \
+			--file docker/Dockerfile.ubuntu.arm64 .
+
 debian%: ARCH := amd64
 debian%:
 	$(DOCKER) build --pull \
